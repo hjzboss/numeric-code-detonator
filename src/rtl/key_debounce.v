@@ -1,56 +1,47 @@
 /*
     按键消抖电路
 */
-module key_debounce(
-	input	wire	clk,
-	input	wire	rst_n,
-	input	wire	key,
-	output	wire	debounced_key
+module key_debounce (
+	input clk,
+	input rst_n,
+	input key,
+	output debounced_key // 稳定信号
 );
 
-parameter 	CNT_END = 249999;// 延时5ms
+parameter 	CNT_END = 7'd125;// 延时5ms
  
-reg	[17:0]	cnt;
-reg		cnt_flag;
-reg		key_flag;
+reg	[6:0] cnt;
+reg	cnt_flag;
+reg key_flag;
  
 always @(posedge clk or negedge rst_n) begin
-	if (rst_n == 1'b0) begin
+	if (rst_n == 1'b0)
 		// reset
 		cnt <= 1'b0;
-	end
-	else if (key == 1'b0) begin
-		cnt <= cnt + 1;
-	end
-	else begin
+	else if (key == 1'b0)
+		cnt <= cnt + 7'd1;
+	else
 		cnt <= 1'b0;
-	end
 end
  
 always @(posedge clk or negedge rst_n) begin
-	if (rst_n == 1'b0) begin
+	if (rst_n == 1'b0)
 		// reset
 		cnt_flag <= 1'b0;
-	end
-	else if(key == 1'b1)begin
+	else if(key == 1'b1)
 		cnt_flag <= 1'b0;
-	end
-	else if (cnt == CNT_END) begin
+	else if (cnt == CNT_END)
 		cnt_flag <= 1'b1;
-	end
 end
  
 always @(posedge clk or negedge rst_n) begin
-	if (rst_n == 1'b0) begin
+	if (rst_n == 1'b0)
 		// reset
 		key_flag <= 1'b0;
-	end
-	else if (cnt_flag == 1'b0 && cnt == CNT_END) begin // 避免稳定后重复计数
+	else if (cnt_flag == 1'b0 && cnt == CNT_END) // 避免稳定后重复计数
 		key_flag <= 1'b1;
-	end
-	else begin
+	else
 		key_flag <= 1'b0;
-	end
 end
 
 assign debounced_key = key_flag;

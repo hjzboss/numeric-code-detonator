@@ -1,15 +1,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 // 公司: NUDT
-// 工程师: 黄俊哲
+// 工程师: hjz
 // 创建日期: 2022/11/07
 // 设计名称: 数字密码引爆器
 // 模块名: key_debounce
-// 目标器件: 未定
+// 目标器件: PYNQ-Z2
 // 工具软件版本号: vivado
 // 描述:
 // 按键消抖电路
 // 修订版本:
-// rev1.0
+// rev1.1
 // 额外注释:
 // 待定
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,9 +21,9 @@ module key_debounce (
 	output debounced_key // 稳定信号
 );
 
-parameter 	CNT_END = 7'd125;// 延时5ms
+parameter 	CNT_END = 50_000;// 延时5ms
  
-reg	[6:0] cnt;
+reg	[15:0] cnt;
 reg	cnt_flag;
 reg key_flag;
  
@@ -32,9 +32,9 @@ always @(posedge clk or negedge rst_n) begin
 		// reset
 		cnt <= 1'b0;
 	else if (key == 1'b0)
-		cnt <= cnt + 7'd1;
+		cnt <= cnt + 16'd1;
 	else
-		cnt <= 1'b0;
+		cnt <= 16'd0;
 end
  
 always @(posedge clk or negedge rst_n) begin

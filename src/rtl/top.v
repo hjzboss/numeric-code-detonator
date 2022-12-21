@@ -9,7 +9,7 @@
 // 描述:
 // 顶层模块，连接消抖电路模块和数字密码引爆器主模块
 // 修订版本:
-// rev1.0
+// rev1.1
 // 额外注释:
 // 待定
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,16 +21,19 @@ module top(
     input ready,
     input fire,
     input sure,
-    input [9:0] A, // 按键0-9
-    output lt, // 绿灯
+    //input [9:0] A, // 按键0-9
+    input [3:0] A,
+		input confirm,
+		output [3:0] en,
+		output lt, // 绿灯
     output bt, // 黄灯
     output rt, // 红灯
-    output lb, // 蜂鸣器
-    output [3:0] m_disp // 当前输入数字    
+    //output lb, // 蜂鸣器
+    output [6:0] m_disp // 当前输入数字    
 );
 
-wire db_wait_t, db_setup, db_ready, db_fire, db_sure;
-wire [9:0] db_A;
+wire db_wait_t, db_setup, db_ready, db_fire, db_sure, db_confirm;
+//wire [9:0] db_A;
 
 key_debounce wait_db (
     .clk(clk),
@@ -67,7 +70,15 @@ key_debounce sure_db (
     .debounced_key(db_sure)
 );
 
+key_debounce confirm_db (
+    .clk(clk),
+    .rst_n(rst),
+    .key(confirm),
+    .debounced_key(db_confirm)
+);
+
 // 数字按键消抖
+/*
 genvar i;
 
 generate
@@ -80,6 +91,7 @@ generate
         );
     end
 endgenerate
+*/
 
 // 实例化数字密码引爆器模块
 numeric_code_detonator numeric_code_detonator_inst (
@@ -90,11 +102,13 @@ numeric_code_detonator numeric_code_detonator_inst (
     .ready(db_ready),
     .fire(db_fire),
     .sure(db_sure),
-    .A(db_A),
+    .A(A),
+		.confirm(db_confirm),
     .lt(lt),
     .bt(bt),
     .rt(rt),
-    .lb(lb),
+    //.lb(lb),
+		.en(en),
     .m_disp(m_disp)
 );
 endmodule

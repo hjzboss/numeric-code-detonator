@@ -1,35 +1,36 @@
 ////////////////////////////////////////////////////////////////////////////////
-// 公司: NUDT
-// 工程师: hjz
-// 创建日期: 2022/11/07
-// 设计名称: 数字密码引爆器
-// 模块名: key_debounce
-// 目标器件: PYNQ-Z2
-// 工具软件版本号: vivado
-// 描述:
-// 按键消抖电路
-// 修订版本:
-// rev1.1
-// 额外注释:
-// 待定
+// Company: nudt
+// Engineer: huang junzhe
+//
+// Create Date: 2022/11/07                        
+// Design Name: numeric_code_detonator
+// Module Name: key_debounce
+// Target Device: PYNQ-Z2
+// Tool versions: vivado 18.2
+// Description:
+// FPGA key debounce module
+//
+// Dependencies: 
+//
+// Revision:
+// 1.0
 ////////////////////////////////////////////////////////////////////////////////
 
 module key_debounce (
 	input clk,
-	input rst_n,
+	input rst,
 	input key,
 	output debounced_key // 稳定信号
 );
 
-parameter 	CNT_END = 50_000;// 延时5ms
+parameter CNT_END = 625_000;// 延时5ms
  
-reg	[15:0] cnt;
+reg	[32:0] cnt;
 reg	cnt_flag;
 reg key_flag;
  
-always @(posedge clk or negedge rst_n) begin
-	if (rst_n == 1'b0)
-		// reset
+always @(posedge clk) begin
+	if (rst)
 		cnt <= 1'b0;
 	else if (key == 1'b0)
 		cnt <= cnt + 16'd1;
@@ -37,9 +38,8 @@ always @(posedge clk or negedge rst_n) begin
 		cnt <= 16'd0;
 end
  
-always @(posedge clk or negedge rst_n) begin
-	if (rst_n == 1'b0)
-		// reset
+always @(posedge clk) begin
+	if (rst)
 		cnt_flag <= 1'b0;
 	else if(key == 1'b1)
 		cnt_flag <= 1'b0;
@@ -47,9 +47,8 @@ always @(posedge clk or negedge rst_n) begin
 		cnt_flag <= 1'b1;
 end
  
-always @(posedge clk or negedge rst_n) begin
-	if (rst_n == 1'b0)
-		// reset
+always @(posedge clk) begin
+	if (rst)
 		key_flag <= 1'b0;
 	else if (cnt_flag == 1'b0 && cnt == CNT_END) // 避免稳定后重复计数
 		key_flag <= 1'b1;

@@ -19,6 +19,9 @@ proc create_report { reportName command } {
 }
 set_param chipscope.maxJobs 3
 set_param xicom.use_bs_reader 1
+set_msg_config -id {Common 17-41} -limit 10000000
+set_msg_config -id {HDL 9-1061} -limit 100000
+set_msg_config -id {HDL 9-1654} -limit 100000
 create_project -in_memory -part xc7z020clg400-1
 
 set_param project.singleFileAddWarning.threshold 0
@@ -32,8 +35,10 @@ set_property board_part tul.com.tw:pynq-z2:part0:1.0 [current_project]
 set_property ip_output_repo e:/jcdl/numeric-code-detonator/fpga/numeric-code-detonator/numeric-code-detonator.cache/ip [current_project]
 set_property ip_cache_permissions {read write} [current_project]
 read_verilog -library xil_defaultlib {
+  E:/jcdl/numeric-code-detonator/src/rtl/disp_num.v
   E:/jcdl/numeric-code-detonator/src/rtl/key_debounce.v
   E:/jcdl/numeric-code-detonator/src/rtl/numeric_code_detonator.v
+  E:/jcdl/numeric-code-detonator/src/rtl/red_led.v
   E:/jcdl/numeric-code-detonator/src/rtl/top.v
 }
 # Mark all dcp files as not used in implementation to prevent them from being

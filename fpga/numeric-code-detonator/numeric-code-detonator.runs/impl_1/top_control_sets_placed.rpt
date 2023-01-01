@@ -1,7 +1,7 @@
 Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
-| Date         : Sat Dec 31 23:34:46 2022
+| Date         : Sun Jan  1 13:45:34 2023
 | Host         : hjzboss running 64-bit major release  (build 9200)
 | Command      : report_control_sets -verbose -file top_control_sets_placed.rpt
 | Design       : top
@@ -23,11 +23,11 @@ Table of Contents
 +----------------------------------------------------------+-------+
 |                          Status                          | Count |
 +----------------------------------------------------------+-------+
-| Total control sets                                       |    10 |
-|    Minimum number of control sets                        |    10 |
+| Total control sets                                       |    14 |
+|    Minimum number of control sets                        |    14 |
 |    Addition due to synthesis replication                 |     0 |
 |    Addition due to physical synthesis replication        |     0 |
-| Unused register locations in slices containing registers |    50 |
+| Unused register locations in slices containing registers |    67 |
 +----------------------------------------------------------+-------+
 * Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
 ** Run report_qor_suggestions for automated merging and remapping suggestions
@@ -39,15 +39,15 @@ Table of Contents
 +--------------------+-------+
 |       Fanout       | Count |
 +--------------------+-------+
-| Total control sets |    10 |
+| Total control sets |    14 |
 | >= 0 to < 4        |     0 |
-| >= 4 to < 6        |     0 |
-| >= 6 to < 8        |     1 |
-| >= 8 to < 10       |     0 |
+| >= 4 to < 6        |     5 |
+| >= 6 to < 8        |     0 |
+| >= 8 to < 10       |     1 |
 | >= 10 to < 12      |     0 |
 | >= 12 to < 14      |     0 |
 | >= 14 to < 16      |     0 |
-| >= 16              |     9 |
+| >= 16              |     8 |
 +--------------------+-------+
 * Control sets can be remapped at either synth_design or opt_design
 
@@ -58,31 +58,35 @@ Table of Contents
 +--------------+-----------------------+------------------------+-----------------+--------------+
 | Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
 +--------------+-----------------------+------------------------+-----------------+--------------+
-| No           | No                    | No                     |               6 |            5 |
+| No           | No                    | No                     |               8 |            7 |
 | No           | No                    | Yes                    |               0 |            0 |
-| No           | Yes                   | No                     |             248 |           78 |
+| No           | Yes                   | No                     |             265 |           88 |
 | Yes          | No                    | No                     |               0 |            0 |
 | Yes          | No                    | Yes                    |               0 |            0 |
-| Yes          | Yes                   | No                     |              16 |            4 |
+| Yes          | Yes                   | No                     |              20 |            8 |
 +--------------+-----------------------+------------------------+-----------------+--------------+
 
 
 4. Detailed Control Set Information
 -----------------------------------
 
-+----------------+--------------------------------------+------------------------------+------------------+----------------+
-|  Clock Signal  |             Enable Signal            |       Set/Reset Signal       | Slice Load Count | Bel Load Count |
-+----------------+--------------------------------------+------------------------------+------------------+----------------+
-|  clk_IBUF_BUFG |                                      |                              |                5 |              6 |
-|  clk_IBUF_BUFG | numeric_code_detonator_inst/passport | rst_IBUF                     |                4 |             16 |
-|  clk_IBUF_BUFG |                                      | rst_IBUF                     |               10 |             18 |
-|  clk_IBUF_BUFG |                                      | setup_db/SR[0]               |               14 |             32 |
-|  clk_IBUF_BUFG |                                      | confirm_db/cnt[0]_i_1__4_n_0 |                9 |             33 |
-|  clk_IBUF_BUFG |                                      | fire_db/cnt[0]_i_1__2_n_0    |                9 |             33 |
-|  clk_IBUF_BUFG |                                      | ready_db/cnt[0]_i_1__1_n_0   |                9 |             33 |
-|  clk_IBUF_BUFG |                                      | setup_db/cnt[0]_i_1__0_n_0   |                9 |             33 |
-|  clk_IBUF_BUFG |                                      | sure_db/cnt[0]_i_1__3_n_0    |                9 |             33 |
-|  clk_IBUF_BUFG |                                      | wait_db/cnt[0]_i_1_n_0       |                9 |             33 |
-+----------------+--------------------------------------+------------------------------+------------------+----------------+
++----------------------+--------------------------------------------------+--------------------------------------------------+------------------+----------------+
+|     Clock Signal     |                   Enable Signal                  |                 Set/Reset Signal                 | Slice Load Count | Bel Load Count |
++----------------------+--------------------------------------------------+--------------------------------------------------+------------------+----------------+
+|  u_disp_ctrl/clk_out | numeric_code_detonator_inst/E[0]                 | rst_IBUF                                         |                1 |              4 |
+|  clk_IBUF_BUFG       | numeric_code_detonator_inst/passport[7]_i_2_n_0  | numeric_code_detonator_inst/passport[7]_i_1_n_0  |                1 |              4 |
+|  clk_IBUF_BUFG       | numeric_code_detonator_inst/passport[11]_i_2_n_0 | numeric_code_detonator_inst/passport[11]_i_1_n_0 |                2 |              4 |
+|  clk_IBUF_BUFG       | numeric_code_detonator_inst/passport[15]_i_2_n_0 | numeric_code_detonator_inst/passport[15]_i_1_n_0 |                2 |              4 |
+|  clk_IBUF_BUFG       | numeric_code_detonator_inst/passport[3]_i_2_n_0  | numeric_code_detonator_inst/passport[3]_i_1_n_0  |                2 |              4 |
+|  clk_IBUF_BUFG       |                                                  |                                                  |                7 |              8 |
+|  clk_IBUF_BUFG       |                                                  | numeric_code_detonator_inst/SR[0]                |               16 |             32 |
+|  clk_IBUF_BUFG       |                                                  | confirm_db/cnt[0]_i_1__4_n_0                     |                9 |             33 |
+|  clk_IBUF_BUFG       |                                                  | fire_db/cnt[0]_i_1__2_n_0                        |                9 |             33 |
+|  clk_IBUF_BUFG       |                                                  | ready_db/cnt[0]_i_1__1_n_0                       |                9 |             33 |
+|  clk_IBUF_BUFG       |                                                  | setup_db/cnt[0]_i_1__0_n_0                       |                9 |             33 |
+|  clk_IBUF_BUFG       |                                                  | sure_db/cnt[0]_i_1__3_n_0                        |                9 |             33 |
+|  clk_IBUF_BUFG       |                                                  | wait_db/cnt[0]_i_1_n_0                           |                9 |             33 |
+|  clk_IBUF_BUFG       |                                                  | rst_IBUF                                         |               18 |             35 |
++----------------------+--------------------------------------------------+--------------------------------------------------+------------------+----------------+
 
 

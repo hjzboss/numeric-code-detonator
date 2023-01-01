@@ -35,30 +35,28 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 module numeric_code_detonator (
-    input clk,
-    input rst,
-    input wait_t,
-    input setup,
-    input ready,
-    input fire,
-    input sure,
-		input [3:0] A, // passport input
-		input confirm, // passport confirm
-    output lt, // green led
-    output bt, // yellow led
-    output reg rt, // red led
-		output reg [3:0] en, // Nixie tube enable
-    output reg [6:0] m_disp // current passport input, connect to Nixie tube
+  input clk,
+  input rst,
+  input wait_t,
+  input setup,
+  input ready,
+  input fire,
+  input sure,
+  input [3:0] A, // passport input
+  input confirm, // passport confirm
+  output lt, // green led
+  output bt, // yellow led
+  output rt_en, // red led
+  output disp_en, // Nixie tube enable
+  output reg [15:0] passport // current passport input, connect to Nixie tube
 );
 
 localparam WAIT = 4'd0, READY = 4'd1, INPUT1 = 4'd2, INPUT2 = 4'd3, INPUT3 = 4'd4, INPUT4 = 4'd5, CHECK = 4'd6, ERROR = 4'd7, OK = 4'd8, FIRE = 4'd9, RST = 4'd10;
 parameter ORIGIN_PASSPORT = 16'h2580; // initial passport
-localparam RT_CNT_MAX = 62_500_000; // 0.5s
 
 reg [3:0] current_state, next_state;
-wire [3:0] current_input;
-reg [15:0] passport; // The password currently entered
 reg [31:0] cnt;
+reg [3:0] ptr; // The current password input pointer
 wire any_input = fire | ready | sure | wait_t; // for fpga bug
 
 always @(*) begin
@@ -84,7 +82,7 @@ always @(*) begin
         next_state = INPUT1;
       else
 				next_state = READY;
-      end
+    end
 		INPUT1: begin
 			if (fire || sure)
         next_state = ERROR;
@@ -145,32 +143,6 @@ always @(*) begin
   endcase
 end
 
-always @(*) begin
-	case(current_input)
-		0: m_disp = 7'b0000001;
-		1: m_disp = 7'b1001111;
-		2: m_disp = 7'b0010010;
-		3: m_disp = 7'b0000110;
-		4: m_disp = 7'b1001100;
-		5: m_disp = 7'b0100100;
-		6: m_disp = 7'b0100000;
-		7: m_disp = 7'b0001111;
-		8: m_disp = 7'b0000000;
-		9: m_disp = 7'b0000100;
-		default: m_disp = 7'b0000001;
-	endcase
-end
-
-always @(*) begin
-  case(current_state)
-    INPUT1: en = 4'b0111;
-    INPUT2: en = 4'b1011;
-    INPUT3: en = 4'b1101;
-    INPUT4: en = 4'b1110;
-    default: en = 4'b1111;
-  endcase
-end
-
 always @(posedge clk) begin
 	if (rst)
     current_state <= RST;
@@ -180,39 +152,31 @@ end
 
 // save the input number
 always @(posedge clk) begin
-  if (rst)
+  if (rst) begin
     passport <= 16'd0;
+    ptr <= 4'd15;
+  end
   else if (current_state == READY || current_state == INPUT1 || current_state == INPUT2 || current_state == INPUT3)
-		if (confirm)
-      passport <= {passport[11:0], A};
-  else
+		if (confirm) begin
+      passport[ptr -: 4] <= A;
+      ptr <= ptr - 4'd4;
+    end
+    else begin
+      passport <= passport;
+      ptr <= ptr;
+    end
+  else if (current_state == INPUT4 || current_state == CHECK || current_state == OK) begin
     passport <= passport;
+    ptr <= ptr;
+  end
+  else begin
+    passport <= 16'd0;
+    ptr <= 4'd15;
+  end
 end
 
-// count 0.5s
-always @(posedge clk) begin
-  if (rst)
-    cnt <= 25'd0;
-  else if (setup)
-    cnt <= 0;
-  else if (current_state == ERROR)
-    cnt <= (cnt == RT_CNT_MAX) ? 0 : cnt + 1;
-  else
-    cnt <= 25'd0;
-end
-
-always @(posedge clk) begin
-  if (rst)
-    rt <= 1'b0;
-  else if (setup) 
-    rt <= 1'b0;
-  else if (cnt == RT_CNT_MAX)
-    rt <= ~rt;
-  else
-		rt <= rt;
-end
-
-assign current_input = passport[3:0];
+assign rt_en = current_state == ERROR;
+assign disp_en = current_state == INPUT1 || current_state == INPUT2 || current_state == INPUT3 || current_state == INPUT4 || current_state == CHECK;
 assign lt = current_state == OK;
 assign bt = current_state == FIRE;
 endmodule

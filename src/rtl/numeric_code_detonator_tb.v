@@ -15,7 +15,6 @@
 // Revision:
 // 1.0
 ////////////////////////////////////////////////////////////////////////////////
-
 `timescale 1us/1ns
 
 module numeric_code_detonator_tb ();
@@ -32,6 +31,11 @@ initial begin
 end
 
 initial begin
+	clk <= 1'b0;
+	forever #20 clk = ~clk;
+end
+
+initial begin
   clk <= 1'b1;
   rst <= 1'b1;
   ready <= 1'b0;
@@ -44,7 +48,6 @@ initial begin
   rst_n <= 1'b0;
 end
 
-always #20 clk = ~clk; // 时钟信号
 /*
 initial begin
 	#40

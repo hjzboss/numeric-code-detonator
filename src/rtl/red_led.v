@@ -17,17 +17,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 module red_led #(
-	RT_CNT_MAX = 62_500_000 // 125MHZ 0.5s
+  parameter RT_CNT_MAX = 62_500_000 // 125MHZ 0.5s
 )(
-	input clk,
-	input rst,
+  input   clk,
+  input   rst,
 
-	input en,
-	output rt
+  input   en,
+  output  rt
 );
 
 reg rt_tmp;
-reg [31:0] cnt;
+reg[31:0] cnt;
 
 assign rt = en ? rt_tmp : 1'b0;
 
@@ -47,6 +47,6 @@ always @(posedge clk) begin
   else if (cnt == RT_CNT_MAX - 1)
     rt_tmp <= ~rt_tmp;
   else
-	rt_tmp <= rt_tmp;
+    rt_tmp <= rt_tmp;
 end
 endmodule

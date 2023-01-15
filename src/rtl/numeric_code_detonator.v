@@ -34,37 +34,34 @@
 // 3.0
 ////////////////////////////////////////////////////////////////////////////////
 
-module numeric_code_detonator (
-  input clk,
-  input rst,
-  input wait_t,
-  input setup,
-  input ready,
-  input fire,
-  input sure,
-  input [3:0] A, // passport input
-  input confirm, // passport confirm
-  output lt, // green led
-  output bt, // yellow led
-  output rt_en, // red led
-  output disp_en, // Nixie tube enable
-  output reg [15:0] passport // current passport input, connect to Nixie tube
+module numeric_code_detonator #(
+  parameter ORIGIN_PASSPORT = 16'h2580 // initial passport
+)(
+  input                 clk,
+  input                 rst,
+  input                 wait_t,
+  input                 setup,
+  input                 ready,
+  input                 fire,
+  input                 sure,
+  input[3:0]            A, // passport input
+  input                 confirm, // passport confirm
+  output                lt, // green led
+  output                bt, // yellow led
+  output                rt_en, // red led
+  output                disp_en, // Nixie tube enable
+  output reg[15:0]      passport // current passport input, connect to Nixie tube
 );
 
-localparam WAIT = 4'd0, READY = 4'd1, INPUT1 = 4'd2, INPUT2 = 4'd3, INPUT3 = 4'd4, INPUT4 = 4'd5, CHECK = 4'd6, ERROR = 4'd7, OK = 4'd8, FIRE = 4'd9, RST = 4'd10;
-parameter ORIGIN_PASSPORT = 16'h2580; // initial passport
+localparam WAIT = 4'd0, READY = 4'd1, INPUT1 = 4'd2, INPUT2 = 4'd3, INPUT3 = 4'd4, INPUT4 = 4'd5, CHECK = 4'd6, ERROR = 4'd7, OK = 4'd8, FIRE = 4'd9;
 
-reg [3:0] current_state, next_state;
-reg [31:0] cnt;
-reg [3:0] ptr; // The current password input pointer
-wire any_input = fire | ready | sure | wait_t; // for fpga bug
+reg[3:0] current_state, next_state;
+reg[31:0] cnt;
+reg[3:0] ptr; // The current password input pointer
+wire any_input = fire | ready | sure | wait_t;
 
 always @(*) begin
-	case (current_state)
-    RST: begin
-      // This state is set simply to solve the bug where the FPGA board reset causes all buttons to press at the same time
-      next_state = any_input ? WAIT : RST;
-    end
+  case (current_state)
     WAIT: begin
       if (fire)
         next_state = ERROR;
@@ -81,17 +78,17 @@ always @(*) begin
       else if (confirm)
         next_state = INPUT1;
       else
-				next_state = READY;
+        next_state = READY;
     end
-		INPUT1: begin
-			if (fire || sure)
+    INPUT1: begin
+      if (fire || sure)
         next_state = ERROR;
       else if (wait_t)
         next_state = WAIT;
       else if (confirm)
         next_state = INPUT2;
       else
-				next_state = INPUT1;
+        next_state = INPUT1;
     end
     INPUT2: begin
       if (fire || sure)
@@ -133,8 +130,8 @@ always @(*) begin
     OK: begin
       next_state = fire ? FIRE : OK;
     end         
-		FIRE: begin
-			next_state = wait_t ? WAIT : FIRE;
+    FIRE: begin
+      next_state = wait_t ? WAIT : FIRE;
     end
     ERROR: begin
       next_state = setup ? WAIT : ERROR;
@@ -144,10 +141,10 @@ always @(*) begin
 end
 
 always @(posedge clk) begin
-	if (rst)
-    current_state <= RST;
+  if (rst)
+    current_state <= WAIT;
   else
-		current_state <= next_state;
+    current_state <= next_state;
 end
 
 // save the input number
@@ -157,7 +154,7 @@ always @(posedge clk) begin
     ptr <= 4'd15;
   end
   else if (current_state == READY || current_state == INPUT1 || current_state == INPUT2 || current_state == INPUT3)
-		if (confirm) begin
+    if (confirm) begin
       passport[ptr -: 4] <= A;
       ptr <= ptr - 4'd4;
     end

@@ -15,6 +15,7 @@
 // Revision:
 // 1.0
 ////////////////////////////////////////////////////////////////////////////////
+
 `timescale 1us/1ns
 
 module numeric_code_detonator_tb ();
@@ -118,3 +119,4 @@ numeric_code_detonator dut(
   .lb(lb)
 );
 endmodule
+*/

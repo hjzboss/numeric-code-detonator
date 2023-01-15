@@ -25,15 +25,14 @@ module key_debounce #(
   output              debounced_key
 );
 
-reg[32:0] cnt;
-//reg	cnt_flag;
+reg[31:0] cnt;
 reg key_flag;
  
 always @(posedge clk) begin
   if (rst)
     cnt <= 1'b0;
   else if (key == 1'b1)
-    cnt <= cnt + 16'd1;
+    cnt <= cnt == (KEY_CNT_MAX - 1'b1) ? 32'd0 : cnt + 1;
   else
     cnt <= 16'd0;
 end
@@ -41,7 +40,7 @@ end
 always @(posedge clk) begin
   if (rst)
     key_flag <= 1'b0;
-  else if (cnt == KEY_CNT_MAX)
+  else if (cnt == KEY_CNT_MAX - 1)
     key_flag <= 1'b1;
   else
     key_flag <= 1'b0;

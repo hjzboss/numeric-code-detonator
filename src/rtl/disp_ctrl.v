@@ -16,7 +16,9 @@
 // 1.0
 ////////////////////////////////////////////////////////////////////////////////
 
-module disp_ctrl (
+module disp_ctrl #(
+  parameter DISP_COUNT = 50000
+)(
   input           clk,
   input           rst,
 
@@ -39,7 +41,7 @@ always@(posedge clk) begin
     clk_out <= 1'b1;
   end
   else begin
-    if(count == 16'd49999) begin
+    if(count == DISP_COUNT - 1) begin
       clk_out <= ~clk_out;
       count <= 16'd0;
     end

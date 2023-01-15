@@ -44,13 +44,13 @@ module numeric_code_detonator #(
   input                 ready,
   input                 fire,
   input                 sure,
-  input[3:0]            A, // passport input
-  input                 confirm, // passport confirm
-  output                lt, // green led
-  output                bt, // yellow led
-  output                rt_en, // red led
-  output                disp_en, // Nixie tube enable
-  output reg[15:0]      passport // current passport input, connect to Nixie tube
+  input[3:0]            A,        // passport input
+  input                 confirm,  // passport confirm
+  output                lt,       // green led
+  output                bt,       // yellow led
+  output                rt_en,    // red led
+  output                disp_en,  // Nixie tube enable
+  output reg[15:0]      passport  // current passport input, connect to Nixie tube
 );
 
 localparam WAIT = 4'd0, READY = 4'd1, INPUT1 = 4'd2, INPUT2 = 4'd3, INPUT3 = 4'd4, INPUT4 = 4'd5, CHECK = 4'd6, ERROR = 4'd7, OK = 4'd8, FIRE = 4'd9;

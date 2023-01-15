@@ -19,7 +19,8 @@
 module top #(
   parameter KEY_CNT_MAX     = 625_000   ,
   parameter RT_CNT_MAX      = 62_500_000,
-  parameter ORIGIN_PASSPORT = 16'h2580
+  parameter ORIGIN_PASSPORT = 16'h2580,
+  parameter DISP_COUNT      = 50000
 )(
   input         clk,
   input         rst,
@@ -41,49 +42,63 @@ wire db_wait_t, db_setup, db_ready, db_fire, db_sure, db_confirm;
 wire disp_en, rt_en;
 wire[15:0] passport;
 
-key_debounce wait_db (
+key_debounce #(
+  .KEY_CNT_MAX  (KEY_CNT_MAX)
+)wait_db (
   .clk            (clk      ),
   .rst            (rst      ),
   .key            (wait_t   ),
   .debounced_key  (db_wait_t)
 );
 
-key_debounce setup_db (
+key_debounce #(
+  .KEY_CNT_MAX  (KEY_CNT_MAX)
+)setup_db (
   .clk            (clk      ),
   .rst            (rst      ),
   .key            (setup    ),
   .debounced_key  (db_setup )
 );
 
-key_debounce ready_db (
+key_debounce #(
+  .KEY_CNT_MAX  (KEY_CNT_MAX)
+)ready_db (
   .clk            (clk      ),
   .rst            (rst      ),
   .key            (ready    ),
   .debounced_key  (db_ready )
 );
 
-key_debounce fire_db (
+key_debounce #(
+  .KEY_CNT_MAX  (KEY_CNT_MAX)
+)fire_db (
   .clk            (clk      ),
   .rst            (rst      ),
   .key            (fire     ),
   .debounced_key  (db_fire  )
 );
 
-key_debounce sure_db (
+key_debounce #(
+  .KEY_CNT_MAX  (KEY_CNT_MAX)
+)sure_db (
   .clk            (clk      ),
   .rst            (rst      ),
   .key            (sure     ),
   .debounced_key  (db_sure  )
 );
 
-key_debounce confirm_db (
+key_debounce #(
+  .KEY_CNT_MAX  (KEY_CNT_MAX)
+)confirm_db (
   .clk            (clk        ),
   .rst            (rst        ),
   .key            (confirm    ),
   .debounced_key  (db_confirm )
 );
 
-disp_ctrl u_disp_ctrl (
+disp_ctrl #(
+  .DISP_COUNT   (DISP_COUNT)
+)u_disp_ctrl (
   .clk            (clk        ),
   .rst            (rst        ),
 
@@ -93,7 +108,9 @@ disp_ctrl u_disp_ctrl (
   .m_disp         (m_disp     )
 );
 
-red_led u_red_led (
+red_led #(
+  .RT_CNT_MAX(RT_CNT_MAX)
+)u_red_led (
   .clk            (clk        ),
   .rst            (rst        ),
 
@@ -101,7 +118,9 @@ red_led u_red_led (
   .rt             (rt         )
 );
 
-numeric_code_detonator numeric_code_detonator_inst (
+numeric_code_detonator #(
+  .ORIGIN_PASSPORT(ORIGIN_PASSPORT)
+)numeric_code_detonator_inst (
   .clk            (clk        ),
   .rst            (rst        ),
 
